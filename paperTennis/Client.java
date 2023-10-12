@@ -12,7 +12,7 @@ public class Client {
 
         while (!game.isGameOver()) {
             System.out.println(game);
-            System.out.printf("Player %d's turn.\n", game.getNextPlayer());
+            System.out.printf("Next Turn:\n");
             try {
                 game.makeMove(console);
             } catch (IllegalArgumentException ex) {

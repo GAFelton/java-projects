@@ -14,18 +14,16 @@ import java.util.*;
 
 public class PaperTennis implements AbstractStrategyGame {
     static final int STARTING_POINTS = 50;
-    private int[] board;
+    static final int[] VALID_BOARD_POSITIONS = new int[] { -3, -2, -1, 1, 2, 3 };
     private int currentPosition;
-    private int[] validBoardPositions = new int[] { -3, -2, -1, 1, 2, 3 };
     private int leftPoints;
     private int rightPoints;
 
     // Class constructor, creating a new PaperTennis match.
     public PaperTennis() {
-        board = new int[] { -2, -1, 0, 1, 2 };
-        currentPosition = 0;
-        leftPoints = STARTING_POINTS;
-        rightPoints = STARTING_POINTS;
+        this.currentPosition = 0;
+        this.leftPoints = STARTING_POINTS;
+        this.rightPoints = STARTING_POINTS;
     }
 
     /*
@@ -48,6 +46,13 @@ public class PaperTennis implements AbstractStrategyGame {
     /*
      * Returns a String showing the current board state, including the ball location
      * and players current point values.
+     * The representation of the board will look like the image below,
+     * with the ball `*` moving back and forth on the center line:
+     * _________________
+     * |   |   I   |   |
+     * |   |   I   |   |
+     * |   |   I   |   |
+     * -----------------
      */
     public String toString() {
         // Initialize Map of possible ball positions on the board.
@@ -63,6 +68,8 @@ public class PaperTennis implements AbstractStrategyGame {
         String ballPlacement = String.format("| %s | %s %s %s | %s |\n",
                 posMap.get(-2), posMap.get(-1), posMap.get(0), posMap.get(1), posMap.get(2));
 
+        // Now that ball placement has been set up, capture board state
+        // to show to player.
         String boardState = "";
         boardState += "_________________\n";
         boardState += "|   |   I   |   |\n";
@@ -80,8 +87,7 @@ public class PaperTennis implements AbstractStrategyGame {
      * Both players input a score (0 < score < current points of player).
      * Throw an IllegalArgumentException if the wager of either player is outside of
      * that range. If one wager is higher than other, move ball towards a valid
-     * space
-     * on the lower wager's side. If wagers are equal do not move the ball.
+     * space on the lower wager's side. If wagers are equal do not move the ball.
      * Subtract the inputted score from both sides.
      */
     public void makeMove(Scanner input) {
@@ -92,7 +98,7 @@ public class PaperTennis implements AbstractStrategyGame {
 
         // Check that wagers are valid.
         if (leftWager < 0 || leftWager > leftPoints ||
-            rightWager < 0 || rightWager > rightPoints) {
+                rightWager < 0 || rightWager > rightPoints) {
             String invalidWagerError = "Invalid wager. ";
             invalidWagerError += "Wager must be between 0 and your current available points.";
             throw new IllegalArgumentException(invalidWagerError);
@@ -109,13 +115,13 @@ public class PaperTennis implements AbstractStrategyGame {
             if (currentValidPositionIndex == -1) {
                 currentValidPositionIndex = 3;
             }
-            currentPosition = validBoardPositions[currentValidPositionIndex - 1];
+            currentPosition = VALID_BOARD_POSITIONS[currentValidPositionIndex - 1];
         }
         if (leftWager > rightWager) {
             if (currentValidPositionIndex == -1) {
                 currentValidPositionIndex = 2;
             }
-            currentPosition = validBoardPositions[currentValidPositionIndex + 1];
+            currentPosition = VALID_BOARD_POSITIONS[currentValidPositionIndex + 1];
         }
     }
 
@@ -128,35 +134,33 @@ public class PaperTennis implements AbstractStrategyGame {
      */
     private int findcurrentValidPositionIndex(int currentPosition) {
         int returnIndex = -1;
-        for (int x = 0; x < validBoardPositions.length; x++) {
-            if (validBoardPositions[x] == currentPosition) {
+        for (int x = 0; x < VALID_BOARD_POSITIONS.length; x++) {
+            if (VALID_BOARD_POSITIONS[x] == currentPosition) {
                 returnIndex = x;
             }
         }
         return returnIndex;
     }
 
+    /*
+     * Determines whether the game is over.
+     * If winner is -1, then the game has not reached an end-condition,
+     * so returns false. Otherwise, the game has ended and returns true.
+     */
     public boolean isGameOver() {
-        return getWinner() > 0;
+        return getWinner() != -1;
     }
 
     /*
      * Winner is declared when both players are at 0 points remaining, or when
-     * ball goes outside bounds of board. Returns 0 if no winner, or the player
+     * ball goes outside bounds of board. Returns -2 if no winner, or the player
      * number: 1 or 2.
+     * If the game has not concluded, return -1.
      * 
      */
     public int getWinner() {
-        int winner = 0;
-        if (leftPoints == 0 && rightPoints == 0) {
-            winner = calculateWinner();
-            if (winner == 0) {
-                // This can only happen if both players wager 50 points at
-                // the beginning of the game. In this case, return 3 to signify a draw.
-                winner = 3;
-            }
-        }
-        if (currentPosition < -2 || 2 < currentPosition) {
+        int winner = -1;
+        if ((leftPoints == 0 && rightPoints == 0) || (currentPosition < -2 || 2 < currentPosition)) {
             winner = calculateWinner();
         }
         return winner;
@@ -172,12 +176,15 @@ public class PaperTennis implements AbstractStrategyGame {
         if (currentPosition < 0) {
             return 2;
         }
-        return 0;
+        // A tie can only happen if both players wager 50 points at
+        // the beginning of the game. In this case, return -2 to signify a draw.
+        return -2;
     }
 
-    // This method is not relevant to this implementation of PaperTennis, but is
-    // required by the AbstractStrategyGame super class
-    // (and is relevant for other games).
+    // The getNextPlayer() method is not relevant to this implementation
+    // of PaperTennis, but is issued by the AbstractStrategyGame super class
+    // (and is relevant for other games). I have included it here in case it's
+    // lack of presence would impact the running of Client.java.
     public int getNextPlayer() {
         if (isGameOver()) {
             return -1;
