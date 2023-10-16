@@ -61,8 +61,7 @@ public class PuzzleTask extends Task {
      * 
      * @param action is the action to be attempted.
      * 
-     * @return true if the action is inputting the correct solution, false
-     * otherwise.
+     * @return true if the action is inputting the correct solution, false otherwise.
      * 
      * @throws IllegalArgumentException if the action attempted is not one of the
      * valid actions as specified by getActionOptions().
@@ -75,7 +74,7 @@ public class PuzzleTask extends Task {
                     + " is not valid! Please enter one of the following actions: " + getActionOptions());
         }
         if (action.equals("hint")) {
-            addHint();
+            return addHint();
         } else if (actionComponents[1].equals(solution)) {
             completed = true;
             return true;
@@ -84,12 +83,20 @@ public class PuzzleTask extends Task {
     }
 
     /*
-     * Helper method to display a hint at the bottom of the Task description.
+     * Helper method to display a hint at the bottom of the Task description,
+     * and mark the action as successful if it gets a hint, or unsuccessful
+     * if the user is out of hints.
+     * 
+     * @return true if a hint has been added to description, or false if the user is
+     * out of hints.
      */
-    private void addHint() {
+    private boolean addHint() {
         if (hintIndex < hints.size()) {
             showHint = "\n" + hints.get(hintIndex);
             hintIndex++;
+            return true;
+        } else {
+            return false;
         }
     }
 }
