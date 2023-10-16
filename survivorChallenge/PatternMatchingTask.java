@@ -54,22 +54,32 @@ public class PatternMatchingTask extends PrecisionTask {
      * 
      * @param input is the list of items that match the pattern.
      * 
-     * @return true if the action is inputting the correct solution, false
-     * otherwise.
+     * @return true if the action is inputting the correct solution,
+     * and false otherwise.
      * 
      * @throws IllegalArgumentException if the input is not in the form of a
      * comma-separated list.
      */
     public boolean takeAction(String input) {
         int correctGuesses = 0;
-        // RegEx built and tested using tool https://regex101.com/
-        // "^[a-zA-Z0-9]*(?:,?[a-zA-Z0-9]*){0,}$"
-        if (!input.matches("^[a-zA-Z0-9]*(?:, ?[a-zA-Z0-9]*){0,}$")) {
-            throw new IllegalArgumentException("Your input (" + input
-                    + ") is not valid! Please enter a comma-separated list (ex. \"a, b, c\")");
+        List<String> guesses = new ArrayList<String>(Arrays.asList(input.split(", ")));
+
+        // Without using RegEx to match (!input.matches("^[a-zA-Z0-9]*(?:,
+        // ?[a-zA-Z0-9]*){0,}$")),
+        // we check first that the input string has been split at all, and if not,
+        // whether spaces are present which might indicate that a user has
+        // entered an improperly formatted input.
+        if (guesses.size() == 1) {
+            if (guesses.get(0).contains(" ")) {
+                throw new IllegalArgumentException("Your input (" + input
+                        + ") is not valid! Please enter a comma-separated list (ex. \"a, b, c\")");
+            }
         }
 
-        List<String> guesses = new ArrayList<String>(Arrays.asList(input.split(", ")));
+        // We are checking for an exact match of correct guesses.
+        // If a user has inputted an incorrect answer, decrement correctGuesses.
+        // This will cover the case in which all correct answers may be present
+        // in addition to one or more incorrect guesses.
         for (String item : guesses) {
             if (solution.contains(item)) {
                 correctGuesses++;
