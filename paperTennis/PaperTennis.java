@@ -13,8 +13,8 @@
 import java.util.*;
 
 public class PaperTennis implements AbstractStrategyGame {
-    static final int STARTING_POINTS = 50;
-    static final int[] VALID_BOARD_POSITIONS = new int[] { -3, -2, -1, 1, 2, 3 };
+    private static final int STARTING_POINTS = 50;
+    private static final int[] VALID_BOARD_POSITIONS = new int[] { -3, -2, -1, 1, 2, 3 };
     private int currentPosition;
     private int leftPoints;
     private int rightPoints;
@@ -47,7 +47,7 @@ public class PaperTennis implements AbstractStrategyGame {
      * Returns a String showing the current board state, including the ball location
      * and players current point values.
      * The representation of the board will look like the image below,
-     * with the ball `*` moving back and forth on the center line:
+     * with the ball `*` moving back and forth across the center:
      * _________________
      * |   |   I   |   |
      * |   |   I   |   |
