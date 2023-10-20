@@ -5,25 +5,28 @@
  * How to Play:
  * Run Client.java to play the game.
  * 
- * Possible addition to the game:
- * The game consists of three rounds played as below, with the winner of each round earning 1 point for winning, 
- * and an additional point for winning via moving the game piece beyond -2 or +2.
- * The player with more points after all three rounds is the overall winner.
  */
 import java.util.*;
 
 public class PaperTennis implements AbstractStrategyGame {
-    private static final int STARTING_POINTS = 50;
+    private static final int STARTING_WAGER_POINTS = 50;
     private static final int[] VALID_BOARD_POSITIONS = new int[] { -3, -2, -1, 1, 2, 3 };
+    private static final int NUMBER_OF_ROUNDS = 3;
+    private int round;
+    private int leftRoundPoints;
+    private int rightRoundPoints;
     private int currentPosition;
-    private int leftPoints;
-    private int rightPoints;
+    private int leftWagerPoints;
+    private int rightWagerPoints;
 
     // Class constructor, creating a new PaperTennis match.
     public PaperTennis() {
+        this.round = 1;
+        this.leftRoundPoints = 0;
+        this.rightRoundPoints = 0;
         this.currentPosition = 0;
-        this.leftPoints = STARTING_POINTS;
-        this.rightPoints = STARTING_POINTS;
+        this.leftWagerPoints = STARTING_WAGER_POINTS;
+        this.rightWagerPoints = STARTING_WAGER_POINTS;
     }
 
     /*
@@ -31,15 +34,19 @@ public class PaperTennis implements AbstractStrategyGame {
      */
     public String instructions() {
         String result = "";
-        result += "In Paper Tennis, both players start with 50 points each \n";
+        result += "In Paper Tennis, both players start with 50 points each\n";
         result += "and a ball directly between them on a court with four zones.\n\n";
         result += "On each turn, players will wager a number of points, which will be\n";
         result += "subtracted from their 50 point total. The player who places a higher wager\n";
         result += "in a round gets to advance the ball one zone on the court towards\n";
         result += "their opponent. If the ball leaves the court through one side,\n";
-        result += "that player loses the game. If both players wager all their points,\n";
-        result += "the game ends and the loser is determined by which half of the court\n";
-        result += "the ball is in.";
+        result += "that player loses the round. If both players wager all their points,\n";
+        result += "the round ends and the loser is determined by which half of the court\n";
+        result += "the ball is in.\n\n";
+        result += "Paper Tennis is played over a series of three rounds. The winner of each round\n";
+        result += "will score either one point for having the ball in their opponent's half,\n";
+        result += "or two points for knocking the ball out of the court.\n";
+        result += "The player with the most points after three rounds is the overall winner!\n";
         return result;
     }
 
@@ -53,6 +60,7 @@ public class PaperTennis implements AbstractStrategyGame {
      * |   |   I   |   |
      * |   |   I   |   |
      * -----------------
+     * If the game has ended, return a String showing final points.
      */
     public String toString() {
         // Initialize Map of possible ball positions on the board.
@@ -77,9 +85,16 @@ public class PaperTennis implements AbstractStrategyGame {
         boardState += "|   |   I   |   |\n";
         boardState += "-----------------\n";
         boardState += "\n";
-        boardState += String.format("Player 1 (Left) Points: %d\n", leftPoints);
-        boardState += String.format("Player 2 (Right) Points: %d\n", rightPoints);
+        boardState += String.format("Player 1 (Left) Wager Points Remaining: %d\n", leftWagerPoints);
+        boardState += String.format("Player 2 (Right) Wager Points Remaining: %d\n", rightWagerPoints);
 
+        // If the game is over, prepare to print the final score.
+        if (round > NUMBER_OF_ROUNDS) {
+            String finalDescription = "";
+            finalDescription += String.format("The Final Score is %d : %d, meaning...", leftRoundPoints,
+                    rightRoundPoints);
+            return finalDescription;
+        }
         return boardState;
     }
 
@@ -97,15 +112,16 @@ public class PaperTennis implements AbstractStrategyGame {
         int rightWager = input.nextInt();
 
         // Check that wagers are valid.
-        if (leftWager < 0 || leftWager > leftPoints ||
-                rightWager < 0 || rightWager > rightPoints) {
+        if (leftWager < 0 || leftWager > leftWagerPoints ||
+                rightWager < 0 || rightWager > rightWagerPoints) {
             String invalidWagerError = "Invalid wager. ";
             invalidWagerError += "Wager must be between 0 and your current available points.";
+            invalidWagerError += "\nPlease try again:";
             throw new IllegalArgumentException(invalidWagerError);
         }
         // Reduce wagered points from both sides
-        leftPoints = leftPoints - leftWager;
-        rightPoints = rightPoints - rightWager;
+        leftWagerPoints = leftWagerPoints - leftWager;
+        rightWagerPoints = rightWagerPoints - rightWager;
 
         // Determine how the ball should move. If findcurrentValidPositionIndex()
         // returns -1, meaning that the ball is still at the center line,
@@ -152,33 +168,83 @@ public class PaperTennis implements AbstractStrategyGame {
     }
 
     /*
-     * Winner is declared when both players are at 0 points remaining, or when
-     * ball goes outside bounds of board. Returns -2 if no winner, or the player
-     * number: 1 or 2.
-     * If the game has not concluded, return -1.
-     * 
+     * Determine the winner of the overall game. First, checks the round winner &
+     * advances the round. If the game has completed (meaning 3 rounds have been
+     * played), tally up points and return an overall winner. Returns -2 if no
+     * winner, or the player number: 1 or 2.
+     * Important: If the game has not concluded, return -1.
      */
     public int getWinner() {
+        getRoundWinner();
         int winner = -1;
-        if ((leftPoints == 0 && rightPoints == 0) || (currentPosition < -2 || 2 < currentPosition)) {
-            winner = calculateWinner();
+        if (round > NUMBER_OF_ROUNDS) {
+            if (leftRoundPoints > rightRoundPoints) {
+                winner = 1;
+            } else if (leftRoundPoints < rightRoundPoints) {
+                winner = 2;
+            } else {
+                // A tie can only happen if both players wager 50 points at
+                // the beginning of the game. In this case, return -2 to signify a draw.
+                winner = -2;
+            }
         }
         return winner;
     }
 
-    // private helper method to determine the winner based on the side of the board
-    // the ball is on. Returns 1 if ball is left of center, 2 if ball is right of
-    // center, or 0 if a tie.
-    private int calculateWinner() {
+    /*
+     * Private helper method for getRoundWinner() to reset the board. Prints the
+     * board state for the players, then sets currentPosition and left/right wager
+     * points to starting values.
+     */
+    private void resetBoard() {
+        String roundDescription = "";
+        roundDescription += String.format("New Round: Round %d\n", round);
+        roundDescription += String.format("Player 1 Round Points %d\n", leftRoundPoints);
+        roundDescription += String.format("Player 2 Round Points %d\n", rightRoundPoints);
+        System.out.println(roundDescription);
+        currentPosition = 0;
+        leftWagerPoints = STARTING_WAGER_POINTS;
+        rightWagerPoints = STARTING_WAGER_POINTS;
+    }
+
+    /*
+     * Private helper method for getWinner().
+     * Round is over and a round winner is declared when both players are at 0
+     * points remaining, or when ball goes outside bounds of board. If the ball goes
+     * out of bounds, that winner earns two round points. If the ball ends a round
+     * inside the court, the winner earns one round point.
+     * 
+     */
+    private void getRoundWinner() {
+        if (leftWagerPoints == 0 && rightWagerPoints == 0) {
+            calculateRoundWinner(1);
+        } else if (currentPosition < -2 || 2 < currentPosition) {
+            calculateRoundWinner(2);
+
+        }
+    }
+
+    /*
+     * Private helper method for getRoundWinner() to determine the round winner
+     * based on the side of the board the ball is on, and increment the round
+     * number. Prints 'player 1 wins' if ball is left of center, 'Player 2 wins' if
+     * ball is right of center, or a 'tie'. The board resets as long as there are
+     * rounds remaining to play.
+     */
+    private void calculateRoundWinner(int roundPoints) {
         if (currentPosition > 0) {
-            return 1;
+            leftRoundPoints = leftRoundPoints + roundPoints;
+            System.out.println("Player 1 wins this round!\n");
+        } else if (currentPosition < 0) {
+            rightRoundPoints = rightRoundPoints + roundPoints;
+            System.out.println("Player 2 wins this round!\n");
+        } else {
+            System.out.println("This round ends in a tie!\n");
         }
-        if (currentPosition < 0) {
-            return 2;
+        round++;
+        if (round <= NUMBER_OF_ROUNDS) {
+            resetBoard();
         }
-        // A tie can only happen if both players wager 50 points at
-        // the beginning of the game. In this case, return -2 to signify a draw.
-        return -2;
     }
 
     // The getNextPlayer() method is not relevant to this implementation
