@@ -1,7 +1,8 @@
 import java.util.*;
 
 /*
- * A PrecisionTask is a Task that requires the user to complete a series of actions in the correct order.
+ * A PrecisionTask extends the class Task. It requires the user to complete a
+ * series of actions in the correct order.
  */
 public class PrecisionTask extends Task {
     public static final List<String> actionOptions = Arrays.asList("jump", "swim", "run", "climb", "crawl");
@@ -9,8 +10,7 @@ public class PrecisionTask extends Task {
     private int currentActionIndex;
 
     /*
-     * Construct a new PrecisionTask. Each PrecisionTask requires the following
-     * inputs:
+     * Construct a new PrecisionTask. Each PrecisionTask requires the following inputs:
      * - Which actions must be done, in what order Use any combination of the
      * following: "jump", "swim", "run", "climb", "crawl"
      * - Describe the task to the user.
@@ -21,8 +21,7 @@ public class PrecisionTask extends Task {
     }
 
     /*
-     * Returns the possible options that a user may take to attempt to complete this
-     * task.
+     * Returns the possible options that a user may take to attempt to complete this task.
      * 
      * @return the list of valid actions for the task.
      */
@@ -33,8 +32,7 @@ public class PrecisionTask extends Task {
     /*
      * Returns whether or not this task has been completed.
      * 
-     * @return true if the user has done all required actions in the specified
-     * order.
+     * @return true if the user has done all required actions in the specified order.
      */
     public boolean isComplete() {
         if (currentActionIndex == (requiredActions.size())) {
@@ -45,8 +43,7 @@ public class PrecisionTask extends Task {
 
     /*
      * Attempt to take an action towards completing the task.
-     * Depending on how many items have been specified in the requiredActions
-     * sequence,
+     * Depending on how many items have been specified in the requiredActions sequence,
      * the PrecisionTask may take multiple iterations to complete.
      * 
      * @param action is the action to be attempted.

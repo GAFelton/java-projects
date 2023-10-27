@@ -1,7 +1,7 @@
 import java.util.*;
 
 /*
- * An EnduranceTask is a Task that requires a specified number of repetitions
+ * An EnduranceTask extends the class Task. It that requires a specified number of repetitions
  * of a specific action to complete.
  */
 public class EnduranceTask extends Task {
@@ -10,8 +10,7 @@ public class EnduranceTask extends Task {
     private int duration;
 
     /*
-     * Construct a new EnduranceTask. Each EnduranceTask requires the following
-     * inputs:
+     * Construct a new EnduranceTask. Each EnduranceTask requires the following inputs:
      * - Which action must be repeated? Use one of: "jump", "swim", "run", "climb", "crawl"
      * - How many times must that action be repeated?
      * - Describe the task to the user.
@@ -23,8 +22,7 @@ public class EnduranceTask extends Task {
     }
 
     /*
-     * Returns the possible options that a user may take to attempt to complete this
-     * task.
+     * Returns the possible options that a user may take to attempt to complete this stask.
      * 
      * @return the list of valid actions for the task.
      */
@@ -35,8 +33,7 @@ public class EnduranceTask extends Task {
     /*
      * Returns whether or not this task has been completed.
      * 
-     * @return true if the user has done the specific action as many times as
-     * required.
+     * @return true if the user has done the specific action as many times as required.
      */
     public boolean isComplete() {
         if (duration == 0) {

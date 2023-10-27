@@ -1,29 +1,40 @@
 import java.util.*;
 
 /*
- * A PuzzleTask is a Task that requires the user to answer a logical or knowledge-specific question.
+ * A PuzzleTask extends the class Task. It requires the user to answer a
+ * logical or knowledge-specific question.
  * The PuzzleTask has one correct answer.
  */
 public class PuzzleTask extends Task {
     public static final List<String> actionOptions = Arrays.asList("hint", "solve <solution>", "solve");
     private String solution;
     private List<String> hints;
-    private String showHint;
     private boolean completed;
     private int hintIndex;
 
     /*
      * Construct a new PuzzleTask. Each PuzzleTask requires the following inputs:
      * - The correct solution for the PuzzleTask.
-     * - A Comma-separated list of hints, which the user can ask for one at a time.
+     * - A comma-separated list of hints, which the user can ask for one at a time.
      * - A description of the task.
      */
     public PuzzleTask(String solution, List<String> hints, String description) {
         super(description);
         this.solution = solution;
-        this.hints = hints;
-        this.showHint = "";
+        this.hints = arrangeHints(hints);
         this.completed = false;
+    }
+
+    /*
+     * Private Helper Method to ensure that the first element of hints list is an
+     * empty string, so no hints display when getDescription() is first called.
+     * @returns a List of Strings containing "" in addition to all the hints provided.
+     */
+    private static List<String> arrangeHints(List<String> hints) {
+        List<String> hintsList = new ArrayList<String>();
+        hintsList.add("");
+        hintsList.addAll(hints);
+        return hintsList;
     }
 
     /*
@@ -33,7 +44,7 @@ public class PuzzleTask extends Task {
      * @return the string representation of the task
      */
     public String getDescription() {
-        return super.getDescription() + showHint;
+        return super.getDescription() + "\n" + hints.get(hintIndex);
     }
 
     /*
@@ -61,7 +72,11 @@ public class PuzzleTask extends Task {
      * 
      * @param action is the action to be attempted.
      * 
-     * @return true if the action is inputting the correct solution, false otherwise.
+     * @return true if the action is 'hint' as long as there are more hints to
+     * return, otherwise return false.
+     * 
+     * @return true if the action is inputting the correct solution with the format
+     * 'solve <solution>', false otherwise.
      * 
      * @throws IllegalArgumentException if the action attempted is not one of the
      * valid actions as specified by getActionOptions().
@@ -74,29 +89,18 @@ public class PuzzleTask extends Task {
                     + " is not valid! Please enter one of the following actions: " + getActionOptions());
         }
         if (action.equals("hint")) {
-            return addHint();
+            // If there are hints remaining, increment the hintIndex which will cause
+            // getDescription() to include the next hint.
+            if (hintIndex < hints.size() - 1) {
+                hintIndex++;
+                return true;
+            } else {
+                return false;
+            }
         } else if (actionComponents[1].equals(solution)) {
             completed = true;
             return true;
         }
         return false;
-    }
-
-    /*
-     * Helper method to display a hint at the bottom of the Task description,
-     * and mark the action as successful if it gets a hint, or unsuccessful
-     * if the user is out of hints.
-     * 
-     * @return true if a hint has been added to description, or false if the user is
-     * out of hints.
-     */
-    private boolean addHint() {
-        if (hintIndex < hints.size()) {
-            showHint = "\n" + hints.get(hintIndex);
-            hintIndex++;
-            return true;
-        } else {
-            return false;
-        }
     }
 }

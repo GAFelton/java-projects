@@ -1,7 +1,7 @@
 import java.util.*;
 
 /*
- * A PatternMatchingTask is a type of PrecisionTask that requires the user to assess inputs
+ * A PatternMatchingTask extends PrecisionTask. It requires the user to assess inputs
  * against a given pattern to determine which ones match.
  * The PatternMatchingTask has one correct answer, but it need not be given in the same order
  * that is described in the solution.
@@ -14,17 +14,31 @@ public class PatternMatchingTask extends PrecisionTask {
     /*
      * Construct a new PatternMatchingTask. Each PatternMatchingTask requires the
      * following inputs:
-     * - Solution - A comma-separated list of items that match the pattern. (Ex.
-     * "4, 1, 8")
+     * - Solution - A comma-separated list of items that match the pattern.
+     * (Ex. "4, 1, 8")
      * - Options - A comma-separated list describing possibilities which user must
-     * narrow down from to find the solution. (Ex. "13, 16, 11")
+     * narrow down from to find the solution. (Ex. "13, 4, 1, 16, 8, 11")
+     * NOTE: To make a satisfying and solvable task, the Options list must
+     * contain all items that are present in the Solution list.
      * - Description - Describe the pattern to the user. (Ex. "Integers < 10")
      */
     public PatternMatchingTask(List<String> solution, List<String> options, String description) {
-        super(solution, description);
+        super(solution, formatDescription(description));
         this.solution = solution;
         this.options = options;
         this.completed = false;
+    }
+
+    /*
+     * Private Helper method to add the phrase
+     * "(Format answers as a comma-separated list)" to the provided description.
+     * 
+     * @return a string representation of the description including the additional
+     * user instruction to format answers as a comma-separated list.
+     */
+    private static String formatDescription(String description) {
+        return description + " (Format answers as a comma-separated list)";
+
     }
 
     /*
@@ -64,8 +78,11 @@ public class PatternMatchingTask extends PrecisionTask {
         int correctGuesses = 0;
         List<String> guesses = new ArrayList<String>(Arrays.asList(input.split(", ")));
 
-        // Without using RegEx to match (!input.matches("^[a-zA-Z0-9]*(?:,
-        // ?[a-zA-Z0-9]*){0,}$")),
+        // This check involving RegEx would allow us to check for a comma-separated
+        // list:
+        // (!input.matches("^[a-zA-Z0-9]*(?:,?[a-zA-Z0-9]*){0,}$")).
+        // However, we will implement a solution that does not involve using the
+        // String.matches() method:
         // we check first that the input string has been split at all, and if not,
         // whether spaces are present which might indicate that a user has
         // entered an improperly formatted input.

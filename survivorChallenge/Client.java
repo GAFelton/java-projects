@@ -9,7 +9,7 @@ public class Client {
         challenge.add(new EnduranceTask("swim", 1, "A small lake."));
         challenge.add(new PrecisionTask(new ArrayList<>(Arrays.asList("crawl", "climb", "run")), "A low crawl net, then a wall with a rope, then a dash to the end."));
         challenge.add(new PuzzleTask("4", new ArrayList<>(Arrays.asList("It's 4.", "No really, it's 4!")), "What is 2 + 2?"));
-        challenge.add(new PatternMatchingTask(new ArrayList<>(Arrays.asList("bat", "cheetah", "squirrel")), new ArrayList<>(Arrays.asList("python", "bat", "cheetah", "stingray", "squirrel", "iguana")), "Which of these animals are mammals? (Format answers as a comma-separated list)"));
+        challenge.add(new PatternMatchingTask(new ArrayList<>(Arrays.asList("bat", "cheetah", "squirrel")), new ArrayList<>(Arrays.asList("python", "bat", "cheetah", "stingray", "squirrel", "iguana")), "Which of these animals are mammals?"));
 
         attemptChallenge(challenge, console);
     }
