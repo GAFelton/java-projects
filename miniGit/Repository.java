@@ -191,43 +191,45 @@ public class Repository {
      * may however create as many references as you like.
      */
     public void synchronize(Repository other) {
-        if (other.getRepoSize() == 0) {
+        if (other.getRepoSize() != 0) {
             // If other repo is empty, do nothing.
-        } else if (this.getRepoSize() == 0) {
-            this.head = other.head;
-            other.head = null;
-        } else {
-            Commit curr = head;
-            while (curr.past != null && other.head != null) {
+            if (this.getRepoSize() == 0) {
+                // If this repo is empty, move over all commits from other.
+                this.head = other.head;
+                other.head = null;
+            } else {
+                Commit curr = head;
                 if (head.timeStamp < other.head.timeStamp) {
+                    // Case: other.head is later than this head.
+                    // Must handle front-of-list case separately.
                     Commit temp = other.head.past;
                     other.head.past = head;
                     head = other.head;
                     other.head = temp;
                     curr = head;
                 }
-                else if (curr.timeStamp < other.head.timeStamp) {
-                    // if curr is earlier than other
-                    Commit temp = other.head.past;
-                    other.head.past = curr;
-                    curr = other.head;
-                    other.head = temp;
-                }
-                else if (curr.timeStamp > other.head.timeStamp) {
-                    // if curr is later than other
-                    if (curr.past.timeStamp <= other.head.timeStamp) {
-                        // but curr.past is earlier than other
-                        Commit temp = curr.past;
-                        curr.past = other.head;
-                        other.head = other.head.past;
-                        curr.past.past = temp;
+                while (curr.past != null && other.head != null) {
+                    // Loop through this and other repos.
+                    if (curr.timeStamp > other.head.timeStamp) {
+                        // if curr is later than other
+                        if (curr.past.timeStamp <= other.head.timeStamp) {
+                            // but curr.past is earlier than other
+                            // Then insert other between curr and curr.past, maintaining commit histories
+                            // for both.
+                            Commit temp = curr.past;
+                            curr.past = other.head;
+                            other.head = other.head.past;
+                            curr.past.past = temp;
+                        }
+                        // Move curr through loop only while curr is later than other.
+                        curr = curr.past;
                     }
-                    curr = curr.past;
                 }
-            }
-            if (other.head != null) {
-                curr.past = other.head;
-                other.head = null;
+                if (other.head != null) {
+                    // If there are more commits remaining in other, add them to end of current.
+                    curr.past = other.head;
+                    other.head = null;
+                }
             }
         }
     }
