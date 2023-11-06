@@ -1,16 +1,31 @@
 import java.util.*;
 import java.text.SimpleDateFormat;
 
-// TODO: Review Code comments to remove implementation details
+/*
+ * Repository is a representation of a version control system.
+ * It contains a list of commits in chronological order, along with
+ * methods to interact with those commits.
+ * 
+ * Each Repository keeps track of its name and a head commit,
+ * which will link to other commits chronologically.
+ * 
+ * 
+ * Available methods:
+ * contains, commit, drop, getHistory, getRepoHead, getRepoSize, synchronize, toString
+ * 
+ * Additional information is available in comments for each method.
+ * 
+ */
 public class Repository {
     private Commit head;
     private String name;
 
     /*
-     * Creates a new, empty repository with the specified name.
+     * Repository Constructor creates a new, empty repository with the specified
+     * name.
      * 
      * @Exception
-     * If the name is null or empty, throw an IllegalArgumentException
+     * If the name is null or an empty string, throw an IllegalArgumentException
      */
     public Repository(String name) {
         if (name == null || name == "") {
@@ -25,7 +40,7 @@ public class Repository {
      * 
      * @Return
      * Return the ID of the current head of this repository.
-     * If the head is null, return null
+     * If the repository is empty, return null
      */
     public String getRepoHead() {
         if (head == null) {
@@ -36,7 +51,7 @@ public class Repository {
     }
 
     /*
-     * Returns the number of commits in the repository.
+     * getRepoSize returns the number of commits in the repository.
      * 
      * @Return
      * Integer representing number of commits
@@ -58,6 +73,10 @@ public class Repository {
     }
 
     /*
+     * @Override
+     * toString returns the repository name in addition to sharing
+     * information about the head commit.
+     * 
      * @Return
      * Return a string representation of this repository in the following format:
      * <name> - Current head: <head>
@@ -76,8 +95,10 @@ public class Repository {
     }
 
     /*
+     * contains determines if a specified commit is present in the repository.
+     * 
      * @Return
-     * Return true if the commit with ID targetId is in the repository, false if
+     * Returns true if the commit with ID targetId is in the repository, false if
      * not.
      */
     public boolean contains(String targetId) {
@@ -95,8 +116,8 @@ public class Repository {
     }
 
     /*
-     * Return a string consisting of the String representations of the most recent
-     * n commits in this repository, with the most recent first.
+     * getHistory returns a string consisting of the String representations of the
+     * most recent n commits in this repository, with the most recent first.
      * Commits should be separated by a newline (\n) character.
      * 
      * @Return
@@ -120,9 +141,9 @@ public class Repository {
     }
 
     /*
-     * Create a new commit with the given message, add it to this repository.
-     * The new commit should become the new head of this repository, preserving the
-     * history behind it.
+     * commit creates a new commit with the given message, and adds it to this
+     * repository. The new commit becomes the new head of this repository,
+     * preserving the history behind it.
      * 
      * @Return
      * Return the ID of the new commit.
@@ -139,8 +160,8 @@ public class Repository {
     }
 
     /*
-     * Remove the commit with ID targetId from this repository, maintaining the rest
-     * of the history.
+     * drop removes the commit with ID targetId from this repository,
+     * while maintaining the rest of the commmit history.
      * 
      * @Return
      * Returns true if the commit was successfully dropped, or
@@ -177,18 +198,14 @@ public class Repository {
     }
 
     /*
-     * Takes all the commits in the other repository and moves them into this
-     * repository, combining the two repository histories such that chronological
-     * order is preserved. That is, after executing this method, this repository
-     * should contain all commits that were from this and other, and the commits
-     * should be ordered in timestamp order from most recent to least recent.
-     * If the other repository is empty, this repository should remain unchanged.
-     * If this repository is empty, all commits in the other repository should be
-     * moved into this repository.
-     * At the end of this method's execution, other should be an empty repository in
-     * all cases.
-     * You should not construct any new Commit objects to implement this method. You
-     * may however create as many references as you like.
+     * synchronize takes all the commits in the other repository and moves them into
+     * this repository, combining the two repository histories in chronological
+     * order.
+     * 
+     * If the other repository is empty, this repository will be unchanged.
+     * If this repository is empty, all commits from the other repository will be
+     * moved into this one.
+     * All commits will be removed from the other commit.
      */
     public void synchronize(Repository other) {
         if (other.getRepoSize() != 0) {

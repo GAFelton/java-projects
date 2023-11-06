@@ -14,15 +14,16 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test Repository Creation")
+    // Dependency: getRepoSize()
     public void testRepository() {
 
         // Check that exception is thrown for empty repository names
         assertThrows(IllegalArgumentException.class, () -> {
             new Repository("");
-        });
+        }, "\"\" passed into constructor does not throw exception");
         assertThrows(IllegalArgumentException.class, () -> {
             new Repository(null);
-        });
+        }, "null passed into constructor does not throw exception");
 
         // Check that at least one class method can be called on a Repository,
         // which tests that has been initialized correctly.
@@ -31,6 +32,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test getHistory()")
+    // Dependency: commit(), getRepoHead(), getRepoSize()
     public void getHistory() {
         // Initialize commit messages
         String[] commitMessages = new String[] { "Initial commit.", "Updated method documentation.",
@@ -86,6 +88,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test drop() (front case)")
+    // Dependency: getRepoSize(), commit()
     public void testDropFront() {
         assertEquals(repo1.getRepoSize(), 0);
         // Initialize commit messages
@@ -107,6 +110,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test getRepoHead()")
+    // Dependency: commit()
     public void testGetRepoHead() {
         String[] commitMessages = new String[] { "Initial commit.", "Linting." };
 
@@ -119,6 +123,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test getRepoSize()")
+    // Dependency: commit()
     public void testGetRepoSize() {
         String[] commitMessages = new String[] { "Initial commit.", "Linting.", "Updated README.md" };
 
@@ -138,6 +143,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test toString()")
+    // Dependency: commit()
     public void testToString() {
         // Check empty repo toString()
         assertEquals("repo1 - No commits", repo1.toString());
@@ -153,6 +159,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test contains()")
+    // Dependency: commit()
     public void testContains() {
         repo1.commit("Initial commit."); // repo1 ID: "0"
         assertTrue(repo1.contains("0"));
@@ -161,6 +168,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test commit()")
+    // Dependency: getRepoHead(), getHistory()
     public void testCommit() {
         String[] commitMessages = new String[] { "Initial commit.", "Rafactor into Java.", "Write Unit Tests.",
                 "Improve code comments." };
@@ -197,6 +205,7 @@ public class RepositoryTest<Commit> {
      */
     @Test
     @DisplayName("Test synchronize()")
+    // Dependency: commit(), contains(), getRepoHead()
     public void testSynchronize() throws InterruptedException {
         repo1.commit("c1"); // repo1 ID: "0"
         Thread.sleep(1);
@@ -209,6 +218,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test synchronize() with empty repo")
+    // Dependency: commit(), getRepoSize(), getRepoHead()
     public void testSynchronizeEmpty() throws InterruptedException {
         repo1.commit("c1"); // repo1 ID: "0"
 
@@ -225,6 +235,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test synchronize() when this repo is larger")
+    // Dependency: commit(), contains(), getRepoSize(), getRepoHead()
     public void testSynchronizeSelfLarger() throws InterruptedException {
         repo1.commit("c1"); // repo1 ID: "0"
         Thread.sleep(1);
@@ -240,6 +251,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test synchronize() when other repo is larger")
+    // Dependency: commit(), getHistory(), contains(), getRepoSize(), getRepoHead()
     public void testSynchronizeOtherLarger() throws InterruptedException {
         repo1.commit("c1"); // repo1 ID: "0"
         Thread.sleep(1);
@@ -259,6 +271,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test synchronize() with all later timestamps")
+    // Dependency: commit(), getHistory(), contains(), getRepoSize(), getRepoHead()
     public void testSynchronizeOtherLater() throws InterruptedException {
         repo1.commit("c1"); // repo1 ID: "0"
         Thread.sleep(1);
@@ -280,6 +293,7 @@ public class RepositoryTest<Commit> {
 
     @Test
     @DisplayName("Test synchronize() with all earlier timestamps")
+    // Dependency: commit(), getHistory(), contains(), getRepoSize(), getRepoHead()
     public void testSynchronizeOtherEarlier() throws InterruptedException {
         repo2.commit("c1"); // repo2 ID: "0"
         Thread.sleep(1);
