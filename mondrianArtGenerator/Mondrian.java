@@ -1,4 +1,3 @@
-import java.util.*;
 import java.awt.*;
 
 /*
@@ -117,7 +116,7 @@ public class Mondrian {
             for (int j = left; j < right; j++) { // width
                 double ovalVal = isInOval(j, i, left, top, right, bottom);
                 // single pixel black border
-                if (i == top || i == bottom - 1 || j == left || j == right - 1 || ovalVal == 1) {
+                if (i == top || i == bottom - 1 || j == left || j == right - 1) {
                     pixels[i][j] = Color.BLACK;
                     // if inside oval, fill with primary color
                 } else if (ovalVal < 1) {
@@ -147,6 +146,9 @@ public class Mondrian {
         double hMid = (right - left) / 2 + left;
         double vMid = (bottom - top) / 2 + top;
         int crossWidth = 2;
+        if (right - left <= 10 || bottom - top <= 10) {
+            crossWidth = 1;
+        }
 
         for (int i = top; i < bottom; i++) { // height
             for (int j = left; j < right; j++) { // width
@@ -252,7 +254,7 @@ public class Mondrian {
      * sized/color rectangles.
      */
     public void paintBasicMondrian(Color[][] pixels) {
-        paintBasicMondrian(pixels, 0, 0, pixels.length, pixels[0].length);
+        paintBasicMondrian(pixels, 0, 0, pixels[0].length, pixels.length);
     }
 
     /*
@@ -260,7 +262,7 @@ public class Mondrian {
      * sized/color shapes, chosen randomly from rectangles, ovals, and crosses.
      */
     public void paintComplexMondrian(Color[][] pixels) {
-        paintComplexMondrian(pixels, 0, 0, pixels.length, pixels[0].length);
+        paintComplexMondrian(pixels, 0, 0, pixels[0].length, pixels.length);
     }
 
 }
