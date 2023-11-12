@@ -102,9 +102,6 @@ public class Repository {
      * not.
      */
     public boolean contains(String targetId) {
-        if (head == null) {
-            return false;
-        }
         Commit curr = head;
         while (curr != null) {
             if (curr.id.equals(targetId)) {
@@ -149,12 +146,7 @@ public class Repository {
      * Return the ID of the new commit.
      */
     public String commit(String message) {
-        Commit newCommit;
-        if (head != null) {
-            newCommit = new Commit(message, head);
-        } else {
-            newCommit = new Commit(message);
-        }
+        Commit newCommit = new Commit(message, head);
         head = newCommit;
         return newCommit.id;
     }
@@ -174,22 +166,14 @@ public class Repository {
         }
         // If head is designated for removal, change head reference.
         if (head.id.equals(targetId)) {
-            if (head.past == null) {
-                head = null;
-            } else {
-                head = head.past;
-            }
+            head = head.past;
             return true;
         }
         // Otherwise, loop through array, looking for match
         Commit curr = head;
         while (curr != null && curr.past != null) {
             if (curr.past.id.equals(targetId)) {
-                if (curr.past.past == null) {
-                    curr.past = null;
-                } else {
-                    curr.past = curr.past.past;
-                }
+                curr.past = curr.past.past;
                 return true;
             }
             curr = curr.past;

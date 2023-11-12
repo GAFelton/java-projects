@@ -33,7 +33,7 @@ public class RepositoryTest<Commit> {
     @Test
     @DisplayName("Test getHistory()")
     // Dependency: commit(), getRepoHead(), getRepoSize()
-    public void getHistory() {
+    public void testGetHistory() {
         // Initialize commit messages
         String[] commitMessages = new String[] { "Initial commit.", "Updated method documentation.",
                 "Removed unnecessary object creation." };
@@ -87,17 +87,17 @@ public class RepositoryTest<Commit> {
     }
 
     @Test
-    @DisplayName("Test drop() (front case)")
+    @DisplayName("Test drop()")
     // Dependency: getRepoSize(), commit()
-    public void testDropFront() {
+    public void testDrop() {
         assertEquals(repo1.getRepoSize(), 0);
         // Initialize commit messages
-        String[] commitMessages = new String[] { "First commit.", "Added unit tests." };
+        String[] commitMessages = new String[] { "First commit.", "Added unit tests.", "Bugfix" };
 
         repo1.commit(commitMessages[0]); // repo1 ID: "0"
         repo2.commit(commitMessages[1]); // repo2 ID: "1"
 
-        // Assert that repo1 successfully dropped "0"
+        // Assert that repo1 successfully dropped "0": head/front case
         assertTrue(repo1.drop("0"));
         assertEquals(repo1.getRepoSize(), 0);
 
@@ -106,6 +106,16 @@ public class RepositoryTest<Commit> {
         assertFalse(repo2.drop("0"));
         assertTrue(repo2.drop("1"));
         assertEquals(repo2.getRepoSize(), 0);
+
+        repo1.commit(commitMessages[0]); // repo1 ID: "2"
+        repo1.commit(commitMessages[1]); // repo1 ID: "3"
+        repo1.commit(commitMessages[2]); // repo1 ID: "4"
+
+        // Check that commit can be dropped from the middle and other two
+        // commits are connected.
+        assertTrue(repo1.drop("3"));
+        assertEquals(repo1.getRepoSize(), 2);
+
     }
 
     @Test
@@ -113,6 +123,8 @@ public class RepositoryTest<Commit> {
     // Dependency: commit()
     public void testGetRepoHead() {
         String[] commitMessages = new String[] { "Initial commit.", "Linting." };
+
+        assertNull(repo1.getRepoHead()); // repo1 is empty
 
         repo1.commit(commitMessages[0]); // repo1 ID: "0"
         assertEquals("0", repo1.getRepoHead());
