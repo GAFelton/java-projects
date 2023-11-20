@@ -1,11 +1,14 @@
 import java.util.*;
 
 /*
- * This method takes a budget and a list of Location objects as parameter. The method will compute and return the allocation of resources that will result in the most people being helped with the given budget. If there is more than one allocation that will result in the most people being helped, the method will return the allocation that costs the least. If there is more than one allocation that will result in the most people being helped for the lowest cost, you may return any of these allocations.
-
-For the purposes of our simulation, we will assume that providing relief to a location is atomic, meaning that either all people in the location are helped and the full cost is paid, or no relief is allocated to that location. We will not deal with the possibility of providing partial relief to a particular location.
-
-You should implement your allocateRelief method where indicated in the provided Client.java file. You may also implement any additional helper methods you might like. (For example, you will likely want to implement a public-private pair for allocateRelief.)
+ * This method takes a budget and a list of Location objects as parameter.
+ * The method will compute and return all possible allocations of resources within the given budget.
+ * 
+ * For the purposes of our simulation, we will assume that providing
+ * relief to a location is atomic, meaning that either all people in the
+ * location are helped and the full cost is paid, or no relief is allocated
+ * to that location. We will not deal with the possibility of providing
+ * partial relief to a particular location.
  */
 
 public class Client {
@@ -22,12 +25,12 @@ public class Client {
     }
 
     public static Set<Allocation> generateOptions(double budget, List<Location> sites) {
-        // TODO: implement your method here
+        Set<Allocation> allocations = new HashSet<Allocation>();
         if (sites.size() == 0 || budget <= 0) {
-            return new HashSet<Allocation>();
+            return allocations;
         }
 
-        return generateOptions(budget, sites, new HashSet<Allocation>(), new Allocation(), 0);
+        return generateOptions(budget, sites, allocations, new Allocation(), 0);
     }
     // Recursive backtracking is paired with data structures. If you're using some
     // kind of data structure to track your results, you're likely to be using
@@ -36,21 +39,27 @@ public class Client {
     // EXPLORE: recurse, using your newly modified data structure.
     // UNCHOOSE: revert your data structure.
 
-    // TODO: add any of your own helper methods here
     private static Set<Allocation> generateOptions(double budget, List<Location> sites, Set<Allocation> allocations,
             Allocation allocation, int prevSiteIndex) {
         // loop through sites
+
         for (int i = 0; i < sites.size(); i++) {
 
             Location thisSite = sites.get(i);
+            // base case: allocations does not yet contain this allocation (and allocation is under budget)
+            if (budget >= allocation.totalCost()) {
+                allocations.add(allocation);
+            }
+
             // base case: allocation has exceeded budget
             if (budget < allocation.totalCost()) {
                 allocations.add(allocation.withoutLoc(sites.get(prevSiteIndex)));
-
             }
+
             // recursion case: if prevSiteIndex hasn't reach end of sites and allocation
             // doesn't currently contain thisSite
             else if (prevSiteIndex < sites.size() && !allocation.getLocations().contains(thisSite)) {
+
                 // CHOOSE
                 allocation = allocation.withLoc(thisSite);
 
