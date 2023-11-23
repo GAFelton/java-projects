@@ -13,9 +13,18 @@ public class RepositoryTest<Commit> {
     }
 
     @Test
+    @DisplayName("Constructor")
+    //Dependencies: getRepoHead()
+    public void testConstructor() {
+        Repository r = new Repository("r");
+        assertEquals(null, r.getRepoHead(), 
+        "getRepoHead does not return null directly after constructor");
+    }
+
+    @Test
     @DisplayName("Test Repository Creation")
     // Dependency: getRepoSize()
-    public void testRepository() {
+    public void testRepositoryConstructor() {
 
         // Check that exception is thrown for empty repository names
         assertThrows(IllegalArgumentException.class, () -> {
