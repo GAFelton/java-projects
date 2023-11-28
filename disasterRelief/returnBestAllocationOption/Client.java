@@ -30,9 +30,9 @@ public class Client {
     /*
      * allocateRelief() takes in a budget and list of locations, and returns the
      * best combination of those locations to allocate resources to (within the
-     * budget
-     * provided). If no locations or budget are provided, return an empty
-     * Allocation.
+     * budget provided). If two alloctions would help the same number of people,
+     * return the cheaper one. If no locations or budget are provided, return an
+     * empty Allocation.
      * 
      * @Return Allocation, containing the set of locations that allow for aid
      * to be given to the most people within the budget.
