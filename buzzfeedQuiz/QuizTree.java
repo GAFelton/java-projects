@@ -22,12 +22,15 @@ public class QuizTree {
     }
     /*
      * QuizTree constructor
-     * The QuizTree object is a binary tree of quiz questions. QuizTree root nodes
-     * ask the user to choose between two options, and leaf nodes describe a
-     * conclusion point for the quiz based on which choices were made along the way.
+     * The QuizTree object is a binary tree containing quiz questions. QuizTree root
+     * nodes ask the user to choose between two options. Depending on their choices,
+     * the program will traverse the tree either left or right until a leaf node is
+     * reached. Each leaf node describes a conclusion point for the quiz based on
+     * which choices were made along the way.
      * 
-     * @input takes in and reads a txt file to construct the binary tree containing
-     * the quiz. The input file must match the following format:
+     * @input takes in a Scanner which reads a .txt file to construct the
+     * potentially unbalanced binary tree containing the quiz. The input file must
+     * match the following format:
      * red/blue
      * yellow/green
      * END:Froot Loops
@@ -63,7 +66,7 @@ public class QuizTree {
             String leftChoice = currInput.substring(0, currInput.indexOf("/"));
             String rightChoice = currInput.substring(currInput.indexOf("/") + 1);
             String data = "Do you prefer " + leftChoice + " or " + rightChoice + "? ";
-            node = new QuizTreeNode(data, leftChoice, rightChoice, null, null);
+            node = new QuizTreeNode(data, leftChoice, rightChoice);
             node.leftResult = QuizTreeBuilder(inputFile, node.leftResult);
             node.rightResult = QuizTreeBuilder(inputFile, node.rightResult);
             // base case: If we've reached a result leaf node, add it to the quiz and do not
@@ -231,7 +234,7 @@ public class QuizTree {
     private QuizTreeNode addNode(String leftChoice, String rightChoice, String leftResult,
             String rightResult) {
         String data = "Do you prefer " + leftChoice + " or " + rightChoice + "? ";
-        QuizTreeNode root = new QuizTreeNode(data, leftChoice, rightChoice, null, null);
+        QuizTreeNode root = new QuizTreeNode(data, leftChoice, rightChoice);
         root.leftResult = new QuizTreeNode("Your result is: " + leftResult);
         root.rightResult = new QuizTreeNode("Your result is: " + rightResult);
 
@@ -255,6 +258,11 @@ public class QuizTree {
         // Constructs a leaf node with the given data.
         public QuizTreeNode(String data) {
             this(data, null, null, null, null);
+        }
+
+        // Constructs a choice/branch node with the given data.
+        public QuizTreeNode(String data, String leftChoice, String rightChoice) {
+            this(data, leftChoice, rightChoice, null, null);
         }
 
         // Constructs a leaf or branch node with the given data, choices, and links to
